@@ -49,12 +49,13 @@ class CAFE:
         #     image_min = np.min(image_decode.numpy())
         #     self.min.append(image_min)
 
-    def get_dataset(self, size_height, size_length, normalization=0):
+    @staticmethod
+    def get_dataset(filenames_dataset, _decode_and_resize, size_height, size_length, normalization=0):
         """dataset with fixed face-cropping window"""
         # define graph size and whether normalization
-        dataset = self.filenames_dataset.map(
-            map_func=lambda x, y: self._decode_and_resize(x, y, size_height=size_height, size_length=size_length,
-                                                          normalization=normalization),
+        dataset = filenames_dataset.map(
+            map_func=lambda x, y: _decode_and_resize(x, y, size_height=size_height, size_length=size_length,
+                                                     normalization=normalization),
             num_parallel_calls=tf.data.experimental.AUTOTUNE)
         # dataset = []
         # for index, i in enumerate(self.filenames_dataset):  # do the scaling
@@ -80,7 +81,8 @@ class CAFE:
         dataset = tf.data.Dataset.from_tensor_slices((images, tf.one_hot(self.labels, depth=7).numpy()))
         return dataset
 
-    def _decode_and_resize(self, filename, labels, size_height, size_length, normalization=0):
+    @classmethod
+    def _decode_and_resize(cls, filename, labels, size_height, size_length, normalization=0):
         """normalization = 0 means the data has been normalized, otherwise not"""
 
         image_string = tf.io.read_file(filename)  # read image as string code
