@@ -81,8 +81,8 @@ class CAFE:
         dataset = tf.data.Dataset.from_tensor_slices((images, tf.one_hot(self.labels, depth=7).numpy()))
         return dataset
 
-    @classmethod
-    def _decode_and_resize(cls, filename, labels, size_height, size_length, normalization=0):
+    @staticmethod
+    def _decode_and_resize(filename, labels, size_height, size_length, normalization=0):
         """normalization = 0 means the data has been normalized, otherwise not"""
 
         image_string = tf.io.read_file(filename)  # read image as string code
