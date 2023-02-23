@@ -170,9 +170,26 @@ class CVAE:
                     a[0][i].imshow(data.numpy()[i, :, :, :].squeeze())
                     a[1][i].imshow(pred_img[0].numpy()[i, :, :, :].squeeze())
                 f.show()
-                plt.suptitle('VAE_images_reconstructed ()', fontdict=cls.font)
+                plt.suptitle('VAE_images_reconstructed', fontdict=cls.font)
                 plt.draw()
                 plt.show()
+
+    @classmethod
+    def latent_sample(cls, model, n_show=10, std=1):
+
+        # randomly choose a batch to show
+        img_show = tf.random.normal([10, 3], stddev=std)
+        data = tf.cast(img_show, tf.float32)
+
+        pred_img = model(data)
+        # plt.style.use("dark_background")
+        f, a = plt.subplots(1, n_show)
+        for i in range(n_show):
+            a[i].imshow(pred_img[0].numpy()[i, :, :, :].squeeze())
+        f.show()
+        plt.suptitle('VAE_images_sample in LS', fontdict=cls.font)
+        plt.draw()
+        plt.show()
 
     @classmethod
     def latent_space(cls, model, filename, dataset, latent_dims):
