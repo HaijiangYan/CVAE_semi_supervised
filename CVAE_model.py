@@ -12,7 +12,7 @@ class Sampling(tf.keras.layers.Layer):
         batch = tf.shape(z_mean)[0]
         dim = tf.shape(z_mean)[1]
         epsilon = tf.keras.backend.random_normal(shape=(batch, dim))  # re-parameterization
-        return z_mean + tf.exp(0.5 * z_log_var) * epsilon  # equal to sample with the mean z and sd sqrt(var z)
+        return z_mean + tf.exp(0.5 * z_log_var) * epsilon * 0.9  # equal to sample with the mean z and sd sqrt(var z)
 
 
 class Encoder(tf.keras.Model):
