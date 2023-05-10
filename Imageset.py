@@ -160,7 +160,7 @@ class JAFFE:
     def _decode_and_resize(self, filename, size_height, size_length, normalization=0):
         """normalization = 0 means the data has been normalized, otherwise not"""
 
-        image_decode = cv2.imread(filename, 2)[98:216, 73:183]  # ROI
+        image_decode = cv2.imread(filename, 2)[106:216, 75:185]  # ROI
         image_decode = np.expand_dims(image_decode.astype(np.float32), axis=-1)
         # face = self.detector.detect_faces(image_decode)
         # xlim = [face[0]['box'][1] + int(face[0]['box'][3] * 1 / 5),
