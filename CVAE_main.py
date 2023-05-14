@@ -193,10 +193,10 @@ class CVAE:
         plt.show()
 
     @classmethod
-    def latent_space(cls, model, filename, dataset, latent_dims):
+    def latent_space(cls, model, filename, dataset, latent_dims, label_list):
         """display how the latent space clusters different data points in an n-dimensional space"""
         x = np.random.normal(0, 1, [1, latent_dims])
-        plot_batch = dataset.batch(batch_size=100)  # take the trainset as plot data
+        plot_batch = dataset.batch(batch_size=10)  # take the trainset as plot data
 
         for data, labels in plot_batch:  # calculate the latent codes
             data = tf.cast(data, tf.float32)  # crucial in loading a saved_model and calling it with test data
@@ -204,10 +204,18 @@ class CVAE:
             x = tf.concat([x, latent_code[0]], 0)  # [0]: z-mean
         fig = plt.figure(figsize=(8, 8))
         ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(x.numpy()[1:, 0], x.numpy()[1:, 1], x.numpy()[1:, 2],
-                   c=filename.labels, alpha=0.5, cmap=plt.cm.get_cmap('rainbow', 7))
-        plt.title("Data Points in Latent Space", fontdict=cls.font)
+
+        x = x.numpy()[1:, :]
+
+        for key, value in label_list.items():
+            ax.scatter(x[np.where(np.array(filename.labels) == int(key)), 0],
+                       x[np.where(np.array(filename.labels) == int(key)), 1],
+                       x[np.where(np.array(filename.labels) == int(key)), 2],
+                       alpha=0.5, label=value)
+
+        # plt.title("Data Points in Latent Space")
         plt.tight_layout()
+        ax.legend()
         # plt.savefig('./figure/save.jpg')
         plt.show()
 
