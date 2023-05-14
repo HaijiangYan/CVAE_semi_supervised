@@ -196,7 +196,7 @@ class CVAE:
     def latent_space(cls, model, filename, dataset, latent_dims, label_list):
         """display how the latent space clusters different data points in an n-dimensional space"""
         x = np.random.normal(0, 1, [1, latent_dims])
-        plot_batch = dataset.batch(batch_size=10)  # take the trainset as plot data
+        plot_batch = dataset.batch(batch_size=100)  # take the trainset as plot data
 
         for data, labels in plot_batch:  # calculate the latent codes
             data = tf.cast(data, tf.float32)  # crucial in loading a saved_model and calling it with test data
@@ -231,6 +231,33 @@ class CVAE:
         plt.suptitle('Grid Latent Space', fontdict=self.font)
         plt.draw()
         plt.show()
+
+    @classmethod
+    def test(cls, model, filename, dataset):
+        """display how the latent space clusters different data points in an n-dimensional space"""
+
+        test_batch = dataset.batch(batch_size=len(dataset))  # take the trainset as plot data
+
+        for data, labels in test_batch:  # calculate the latent codes
+            data = tf.cast(data, tf.float32)  # crucial in loading a saved_model and calling it with test data
+            _, predicts = model(data, training=False)
+
+        predicts = np.argmax(predicts, axis=1)
+        print('overall accurate:', np.sum(filename.labels == predicts)/len(predicts))
+
+        # confusion matrix
+        confusion_mat = np.zeros((len(np.unique(filename.labels)), len(np.unique(filename.labels))))
+        for i in range(len(np.unique(filename.labels))):
+            for j in range(len(np.unique(filename.labels))):
+                confusion_mat[i, j] = np.sum(predicts[np.where(np.array(filename.labels) == i)] == j)
+
+        print('confusion matrix:\n', confusion_mat)
+
+
+
+
+
+
 
 
 
