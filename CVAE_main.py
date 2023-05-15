@@ -219,17 +219,19 @@ class CVAE:
         # plt.savefig('./figure/save.jpg')
         plt.show()
 
-    def manifold(self, d_range, scale):
-        """Grid plot only for 2-d latent space"""
-        dim = (d_range[1] - d_range[0]) * scale
+    @classmethod
+    def manifold(cls, model, scale, z=0):
+        """Grid plot for sampling 3-d latent space: x,y are firmed as [-3, 3], but z are sampled as input parameters.
+        scale means how many points show"""
+        dim = 6 * scale  # scale
         f, a = plt.subplots(dim, dim)
+        plt.setp(a.flat, xticks=[], yticks=[])
         for i in range(dim):
             for j in range(dim):
-                n_sample = self.model.decoder(tf.constant([[d_range[0] + j / scale, d_range[1] - i / scale]]),
-                                              training=False)
-                a[i][j].imshow(n_sample[0].numpy()[0, :, :, 0])
-        plt.suptitle('Grid Latent Space', fontdict=self.font)
-        plt.draw()
+                sample = model(tf.constant([[-3 + j / scale, 3 - i / scale, z]], dtype=tf.float32))
+                a[i][j].imshow(sample[0].numpy()[0, :, :, 0], cmap='gray')
+        # plt.suptitle('Grid Latent Space', fontdict=cls.font)
+        f.subplots_adjust(wspace=0, hspace=0, bottom=0.15, right=0.88)
         plt.show()
 
     @classmethod
@@ -240,9 +242,9 @@ class CVAE:
 
         for data, labels in test_batch:  # calculate the latent codes
             data = tf.cast(data, tf.float32)  # crucial in loading a saved_model and calling it with test data
-            _, predicts = model(data, training=False)
+            _, predictions = model(data, training=False)
 
-        predicts = np.argmax(predicts, axis=1)
+        predicts = np.argmax(predictions, axis=1)
         print('overall accurate:', np.sum(filename.labels == predicts)/len(predicts))
 
         # confusion matrix
